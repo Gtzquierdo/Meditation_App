@@ -8,15 +8,24 @@ const app = () => {
     const sounds = document.querySelectorAll('.sound-picker button');
     // Time Display
     const timeDisplay = document.querySelector('.time-display');
-    const timeSelect = document.querySelectorAll('.time-select button');
     // Get the length of outline
     const outlineLength = outline.getTotalLength();
     console.log(outlineLength);
     // Duration
+    const timeSelect = document.querySelectorAll('.time-select button');
     let fakeDuration = 600;
 
-        outline.style.strokeDasharray = outlineLength;
-        outline.style.strokeDashoffset = outlineLength;
+    outline.style.strokeDashoffset = outlineLength;
+    outline.style.strokeDasharray = outlineLength;
+
+    //  Pick different sounds
+    sounds.forEach(sound => {
+        sound.addEventListener('click', function() {
+            song.src = this.getAttribute('data-sound');
+            video.src = this.getAttribute('data-video');
+            checkPlaying(song);
+        })
+    })
 
     // Play sound
     play.addEventListener('click', () => {
@@ -27,7 +36,7 @@ const app = () => {
     timeSelect.forEach(option => {
         option.addEventListener('click', function(){
             fakeDuration = this.getAttribute('data-time');
-            timeDisplay.textContent = `${Math.floor(fakeDuration / 60)}"${Math.floor(fakeDuration % 60)}`;
+            timeDisplay.textContent = `${Math.floor(fakeDuration / 60)}:${Math.floor(fakeDuration % 60)}`;
         });
     });
 
@@ -48,16 +57,23 @@ const app = () => {
     song.ontimeupdate = () => {
         let currentTime = song.currentTime;
         let elapsed = fakeDuration - currentTime;
-        let seconds = math.floor(elapsed % 60);
-        let minutes = math.floor(elapsed / 60);
+        let seconds = Math.floor(elapsed % 60);
+        let minutes = Math.floor(elapsed / 60);
 
 
         // Animate the circle
         let progress = outlineLength - (currentTime / fakeDuration) * outlineLength;
         outline.style.strokeDashoffset = progress;
         // Animate the text
-        timeDisplay.textContent = `${minutes}:${seconds}}`;
-    }
+        timeDisplay.textContent = `${minutes}:${seconds}`;
+
+        if(currentTime >= fakeDuration) {
+            song.pause();
+            song.currentTime = 0;
+            play.src = './svg/play.svg';
+            video.pause();
+        }
+    };
 };
 
 
